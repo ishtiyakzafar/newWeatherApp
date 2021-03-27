@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+    />
+    <title>WeatherApp</title>
+  </head>
+  <body>
+    <div class="main_div">
+      <div id="zafarar" class="center_div" style="color: #fff">
+        <div class="search_box">
+          <input id="search" type="text" placeholder="Enter city name" />
+          <i onclick="searchLocation()" class="fas fa-search"></i>
+        </div>
+
+        <div class="location">
+          <i class="fas fa-street-view"></i>
+          <h4 id="location">Ranchi, IN</h4>
+        </div>
+        <div class="tempDetail">
+          <div>
+            <h1 id="temp">28°C</h1>
+            <h6 id="date">Wed | OCT 23 | 10:49 PM</h6>
+          </div>
+          <div class="tempStatus">
+            <h4 id="climate">Few Cloud</h4>
+            <i class="fas fa-thermometer-full"><h5 id="tempMax">28°C</h5></i>
+            <i class="fas fa-thermometer-empty"><h5 id="tempMin">28°C</h5></i>
+          </div>
+        </div>
+        <div id="weatherIcon" class="weather_icon">
+          <i class="fas fa-cloud"></i>
+        </div>
+        <div class="lowerpart">
+          <div class="feel_like">
+            <h3>Feel like</h3>
+            <h1 id="feel">28°C</h1>
+          </div>
+          <div class="humidity">
+            <h3>Humidity</h3>
+            <h1 id="humi">94%</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const weatherApi = async (search) => {
+        try {
+          const jsonData = await fetch(
+            `http://api.openweathermap.org/data/2.5/weather?q=${search}&units=metric&appid=74daefb956f8b3dbea0d7f059ab98e7a`
+          );
+          console.log(search);
+
+          const data = await jsonData.json();
+          console.log(data.weather[0].icon);
+
+          const zafarar = document.getElementById("zafarar");
+          zafarar.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)), url('https://picsum.photos/200/300?random=${data.id}')`;
+
+          const weatherIcon = document.getElementById("weatherIcon");
+
+          document.getElementById("temp").innerHTML = `${data.main.temp}°C`;
+          document.getElementById(
+            "feel"
+          ).innerHTML = `${data.main.feels_like}°C`;
+          document.getElementById("humi").innerHTML = `${data.main.humidity}%`;
+          document.getElementById(
+            "tempMax"
+          ).innerHTML = `${data.main.temp_max}°C`;
+          document.getElementById(
+            "tempMin"
+          ).innerHTML = `${data.main.temp_min}°C`;
+          document.getElementById(
+            "location"
+          ).innerHTML = `${data.name}, ${data.sys.country}`;
+          document.getElementById(
+            "climate"
+          ).innerHTML = `${data.weather[0].main}`;
+
+          if (data.weather[0].main == "Clear") {
+            weatherIcon.innerHTML = `<i class="fas fa-sun"></i>`;
+          } else if (data.weather[0].main == "Clouds") {
+            weatherIcon.innerHTML = `<i class="fas fa-cloud"></i>`;
+          } else if (data.weather[0].main == "Rain") {
+            weatherIcon.innerHTML = `<i class="fas fa-cloud-rain"></i>`;
+          } else if (data.weather[0].main == "Drizzle") {
+            weatherIcon.innerHTML = `<i class="fas fa-cloud-rain"></i>`;
+          } else if (data.weather[0].main == "Haze") {
+            weatherIcon.innerHTML = `<i class="fas fa-smog"></i>`;
+          } else if (data.weather[0].main == "Smoke") {
+            weatherIcon.innerHTML = `<i class="fas fa-smog"></i>`;
+          } else if (data.weather[0].main == "Snow") {
+            weatherIcon.innerHTML = `<i class="fas fa-snowflake"></i>`;
+          } else if (data.weather[0].main == "Thunderstorm") {
+            weatherIcon.innerHTML = `<i class="fas fa-bolt"></i>`;
+          } else {
+            weatherIcon.innerHTML = `<i class="fas fa-cloud"></i>`;
+          }
+        } catch (error) {
+          alert("invalid location");
+        }
+      };
+      const searchval = document.getElementById("search").value;
+      const searchLocation = () => {
+        const search = document.getElementById("search").value;
+        // console.log(search);
+        weatherApi(search);
+      };
+      if (!searchval) {
+        weatherApi("ranchi");
+      }
+      const days = ["sun", "mon", "tue", "wed", "thur", "fri", "sat"];
+      const month = [
+        "jan",
+        "feb",
+        "mar",
+        "apr",
+        "may",
+        "jun",
+        "jul",
+        "aug",
+        "sep",
+        "oct",
+        "nov",
+        "dec",
+      ];
+
+      setInterval(() => {
+        const currDate = new Date();
+        const currDay = days[currDate.getDay()].toUpperCase();
+        const currMonth = month[currDate.getMonth()].toUpperCase();
+        const todayDate = currDate.getDate();
+        let currHour = currDate.getHours();
+        let currMin = currDate.getMinutes();
+
+        let addzero;
+        let period = "AM";
+        currMin < 10 ? (addzero = 0) : (addzero = "");
+        currHour > 11 ? (period = "PM") : "";
+        currHour > 12 ? (currHour -= 12) : currHour;
+
+        document.getElementById(
+          "date"
+        ).innerHTML = `${currDay} | ${currMonth} ${todayDate} | ${currHour}:${addzero}${currMin} ${period}`;
+      }, 1000);
+    </script>
+  </body>
+</html>
